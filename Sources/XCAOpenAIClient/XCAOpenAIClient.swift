@@ -13,15 +13,15 @@ public struct OpenAIClient {
             middlewares: [AuthMiddleware(apiKey: apiKey)])
     }
     
-    public func generateImage(prompt: String, model: Components.Schemas.CreateImageRequest.modelPayload.Value2Payload = .dall_hyphen_e_hyphen_3, responseFormat: Components.Schemas.CreateImageRequest.response_formatPayload = .url, size: Components.Schemas.CreateImageRequest.sizePayload = ._512x512) async throws -> Components.Schemas.Image {
+    public func generateDallE3Image(prompt: String, responseFormat: Components.Schemas.CreateImageRequest.response_formatPayload = .url) async throws -> Components.Schemas.Image {
         
         let response = try await client.createImage(.init(body: .json(
             .init(
                 prompt: prompt,
-                model: .init(value1: nil, value2: model),
+                model: .init(value1: nil, value2: .dall_hyphen_e_hyphen_3),
                 n: 1,
                 response_format: responseFormat,
-                size: size
+                size: ._1024x1024
             ))))
         
         switch response {
