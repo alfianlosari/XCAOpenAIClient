@@ -29,11 +29,13 @@ public struct OpenAIClient {
             switch response.body {
             case .json(let imageResponse) where imageResponse.data.first != nil:
                 return imageResponse.data.first!
+                
             default:
                 throw "Unknown response"
             }
-        default:
-            throw "Failed to generate image"
+            
+        case .undocumented(let statusCode, let payload):
+            throw "OpenAIClientError - statuscode: \(statusCode), \(payload)"
         }
     }
     
