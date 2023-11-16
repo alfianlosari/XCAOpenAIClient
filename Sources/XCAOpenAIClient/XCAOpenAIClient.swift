@@ -2,6 +2,8 @@ import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession
 
+
+
 public struct OpenAIClient {
     
     public let client: Client
@@ -22,8 +24,8 @@ public struct OpenAIClient {
             .init(
                 model: .init(value1: nil, value2: model),
                 input: input,
-                voice: .alloy,
-                response_format: .aac
+                voice: voice,
+                response_format: format
             )))
         
         switch response {
