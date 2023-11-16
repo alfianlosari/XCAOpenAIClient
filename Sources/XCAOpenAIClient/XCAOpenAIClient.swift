@@ -29,7 +29,7 @@ public struct OpenAIClient {
         switch response {
         case .ok(let response):
             switch response.body {
-            case .audio_mpeg(let body):
+            case .any(let body):
                 var data = Data()
                 for try await byte in body {
                     data.append(contentsOf: byte)
