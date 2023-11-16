@@ -20,7 +20,7 @@ public struct OpenAIClient {
     ) async throws -> Data {
         let response = try await client.createSpeech(body: .json(
             .init(
-                model: .init(value1: nil, value2: .tts_hyphen_1),
+                model: .init(value1: nil, value2: model),
                 input: input,
                 voice: .alloy,
                 response_format: .aac
