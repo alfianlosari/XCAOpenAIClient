@@ -2,8 +2,6 @@ import Foundation
 import OpenAPIRuntime
 import OpenAPIURLSession
 
-
-
 public struct OpenAIClient {
     
     public let client: Client
@@ -38,6 +36,19 @@ public struct OpenAIClient {
                 }
                 return data
             }
+            
+        case .undocumented(let statusCode, let payload):
+            throw "OpenAIClientError - statuscode: \(statusCode), \(payload)"
+        }
+    }
+
+    public func generateTransciptions(audioData: Data) async throws -> String {
+        let body = HTTPBody(audioData)
+        let response = try await client.createTranscription(.init(body: .multipartForm(body)))
+        
+        switch response {
+        case .ok(let body):
+            return try body.body.json.text
             
         case .undocumented(let statusCode, let payload):
             throw "OpenAIClientError - statuscode: \(statusCode), \(payload)"
