@@ -16,6 +16,31 @@ public struct OpenAIClient {
         self.apiKey = apiKey
     }
     
+    
+    public func promptChatGPT(
+        prompt: String,
+        model: Components.Schemas.CreateChatCompletionRequest.modelPayload.Value2Payload = .gpt_hyphen_4,
+        assistantPrompt: String = "You are a helpful assistant",
+        prevMessages: [Components.Schemas.ChatCompletionRequestMessage] = []) async throws -> String {
+        let response = try await client.createChatCompletion(body: .json(.init(
+            messages: [.ChatCompletionRequestAssistantMessage(.init(content: assistantPrompt, role: .assistant))]
+            + prevMessages
+            + [.ChatCompletionRequestUserMessage(.init(content: .case1(prompt), role: .user))],
+            model: .init(value1: nil, value2: model))))
+        
+        switch response {
+        case .ok(let body):
+            let json = try body.body.json
+            guard let content = json.choices.first?.message.content else {
+                throw "No Response"
+            }
+            return content
+        case .undocumented(let statusCode, let payload):
+            throw "OpenAIClientError - statuscode: \(statusCode), \(payload)"
+        }
+        
+    }
+    
     public func generateSpeechFrom(input: String,
                                    model: Components.Schemas.CreateSpeechRequest.modelPayload.Value2Payload = .tts_hyphen_1,
                                    voice: Components.Schemas.CreateSpeechRequest.voicePayload = .alloy,
