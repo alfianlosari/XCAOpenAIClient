@@ -131,16 +131,19 @@ public struct OpenAIClient {
     
     public func promptChatGPTVision(
         imageData: Data,
-        detail: Components.Schemas.ChatCompletionRequestMessageContentPartImage.image_urlPayload.detailPayload = .low) async throws -> String {
+        detail: Components.Schemas.ChatCompletionRequestMessageContentPartImage.image_urlPayload.detailPayload = .low,
+            maxTokens: Int? = 300) async throws -> String {
         let response = try await client.createChatCompletion(body: .json(.init(
-            messages: [.ChatCompletionRequestAssistantMessage(.init(content: "Describe this image in details, provide all the visual representation.", role: .assistant)),
+            messages: [
+                .ChatCompletionRequestUserMessage(.init(content: .case1("Describe this image in details, provide all the visual representation."), role: .user)),
                        .ChatCompletionRequestUserMessage(
                         .init(content: .case2([.ChatCompletionRequestMessageContentPartImage(
                             .init(_type: .image_url, image_url:
                                     .init(url: "data:image/jpeg;base64,\(imageData.base64EncodedString())", detail: detail)))]
                         ), role: .user))
             ],
-            model: .init(value1: nil, value2: .gpt_hyphen_4_hyphen_vision_hyphen_preview))))
+            model: .init(value1: nil, value2: .gpt_hyphen_4_hyphen_vision_hyphen_preview),
+            max_tokens: maxTokens)))
             
         switch response {
         case .ok(let body):
