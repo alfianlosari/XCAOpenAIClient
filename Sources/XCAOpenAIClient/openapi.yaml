@@ -5488,7 +5488,6 @@ components:
           items:
             type: object
             required:
-              - finish_reason
               - index
               - logprobs
               - text
@@ -6163,7 +6162,6 @@ components:
           items:
             type: object
             required:
-              - finish_reason
               - index
               - message
             properties:
@@ -6229,7 +6227,6 @@ components:
           items:
             type: object
             required:
-              - finish_reason
               - index
               - message
             properties:
@@ -6304,7 +6301,6 @@ components:
             type: object
             required:
               - delta
-              - finish_reason
               - index
             properties:
               delta:
@@ -6420,7 +6416,6 @@ components:
             required:
               - text
               - index
-              - finish_reason
             properties:
               finish_reason:
                 type: string
