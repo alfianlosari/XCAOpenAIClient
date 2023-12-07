@@ -133,7 +133,7 @@ public struct OpenAIClient {
         imageData: Data,
         detail: Components.Schemas.ChatCompletionRequestMessageContentPartImage.image_urlPayload.detailPayload = .low) async throws -> String {
         let response = try await client.createChatCompletion(body: .json(.init(
-            messages: [.ChatCompletionRequestAssistantMessage(.init(content: "You are a helpful assistant", role: .assistant)),
+            messages: [.ChatCompletionRequestAssistantMessage(.init(content: "Describe this image in details, provide all the visual representation.", role: .assistant)),
                        .ChatCompletionRequestUserMessage(
                         .init(content: .case2([.ChatCompletionRequestMessageContentPartImage(
                             .init(_type: .image_url, image_url:
