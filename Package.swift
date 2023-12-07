@@ -14,9 +14,9 @@ let package = Package(
             targets: ["XCAOpenAIClient"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-openapi-generator", .upToNextMinor(from: "0.3.0")),
-        .package(url: "https://github.com/apple/swift-openapi-runtime", .upToNextMinor(from: "0.3.0")),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", .upToNextMinor(from: "0.3.0")),
+        .package(url: "https://github.com/apple/swift-openapi-generator", .upToNextMinor(from: "1.0.0-alpha.1")),
+        .package(url: "https://github.com/apple/swift-openapi-runtime", .upToNextMinor(from: "1.0.0-alpha.1")),
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", .upToNextMinor(from: "1.0.0-alpha.1")),
         .package(url: "https://github.com/apple/swift-http-types", .upToNextMinor(from: "1.0.0")),
         
     ],

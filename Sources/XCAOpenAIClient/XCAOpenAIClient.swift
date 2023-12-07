@@ -129,4 +129,30 @@ public struct OpenAIClient {
         }
     }
     
+    public func promptChatGPTVision(
+        imageData: Data,
+        detail: Components.Schemas.ChatCompletionRequestMessageContentPartImage.image_urlPayload.detailPayload = .low) async throws -> String {
+        let response = try await client.createChatCompletion(body: .json(.init(
+            messages: [.ChatCompletionRequestAssistantMessage(.init(content: "You are a helpful assistant", role: .assistant)),
+                       .ChatCompletionRequestUserMessage(
+                        .init(content: .case2([.ChatCompletionRequestMessageContentPartImage(
+                            .init(_type: .image_url, image_url:
+                                    .init(url: "data:image/jpeg;base64,\(imageData.base64EncodedString())", detail: detail)))]
+                        ), role: .user))
+            ],
+            model: .init(value1: nil, value2: .gpt_hyphen_4_hyphen_vision_hyphen_preview))))
+            
+        switch response {
+        case .ok(let body):
+            let json = try body.body.json
+            guard let content = json.choices.first?.message.content else {
+                throw "No Response"
+            }
+            return content
+        case .undocumented(let statusCode, let payload):
+            throw "OpenAIClientError - statuscode: \(statusCode), \(payload)"
+        }
+        
+    }
+    
 }

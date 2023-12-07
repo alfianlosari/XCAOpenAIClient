@@ -302,7 +302,7 @@ paths:
               {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-3.5-turbo-0613", "system_fingerprint": "fp_44709d6fcb", "choices":[{"index":0,"delta":{"content":"?"},"finish_reason":null}]}
 
               {"id":"chatcmpl-123","object":"chat.completion.chunk","created":1694268190,"model":"gpt-3.5-turbo-0613", "system_fingerprint": "fp_44709d6fcb", "choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
-          - title: Function calling
+          - title: Functions
             request:
               curl: |
                 curl https://api.openai.com/v1/chat/completions \
@@ -316,8 +316,39 @@ paths:
                       "content": "What is the weather like in Boston?"
                     }
                   ],
-                  "functions": [
+                  "tools": [
                     {
+                      "type": "function",
+                      "function": {
+                        "name": "get_current_weather",
+                        "description": "Get the current weather in a given location",
+                        "parameters": {
+                          "type": "object",
+                          "properties": {
+                            "location": {
+                              "type": "string",
+                              "description": "The city and state, e.g. San Francisco, CA"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "enum": ["celsius", "fahrenheit"]
+                            }
+                          },
+                          "required": ["location"]
+                        }
+                      }
+                    }
+                  ],
+                  "tool_choice": "auto"
+                }'
+              python: |
+                from openai import OpenAI
+                client = OpenAI()
+
+                tools = [
+                  {
+                    "type": "function",
+                    "function": {
                       "name": "get_current_weather",
                       "description": "Get the current weather in a given location",
                       "parameters": {
@@ -325,46 +356,21 @@ paths:
                         "properties": {
                           "location": {
                             "type": "string",
-                            "description": "The city and state, e.g. San Francisco, CA"
+                            "description": "The city and state, e.g. San Francisco, CA",
                           },
-                          "unit": {
-                            "type": "string",
-                            "enum": ["celsius", "fahrenheit"]
-                          }
-                        },
-                        "required": ["location"]
-                      }
-                    }
-                  ],
-                  "function_call": "auto"
-                }'
-              python: |
-                from openai import OpenAI
-                client = OpenAI()
-
-                functions = [
-                  {
-                    "name": "get_current_weather",
-                    "description": "Get the current weather in a given location",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The city and state, e.g. San Francisco, CA",
-                            },
-                            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                          "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
                         },
                         "required": ["location"],
-                    },
+                      },
+                    }
                   }
                 ]
                 messages = [{"role": "user", "content": "What's the weather like in Boston today?"}]
                 completion = client.chat.completions.create(
                   model="VAR_model_id",
                   messages=messages,
-                  functions=functions,
-                  function_call="auto"
+                  tools=tools,
+                  tool_choice="auto"
                 )
 
                 print(completion)
@@ -375,29 +381,32 @@ paths:
 
                 async function main() {
                   const messages = [{"role": "user", "content": "What's the weather like in Boston today?"}];
-                  const functions = [
+                  const tools = [
                       {
+                        "type": "function",
+                        "function": {
                           "name": "get_current_weather",
                           "description": "Get the current weather in a given location",
                           "parameters": {
-                              "type": "object",
-                              "properties": {
-                                  "location": {
-                                      "type": "string",
-                                      "description": "The city and state, e.g. San Francisco, CA",
-                                  },
-                                  "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                            "type": "object",
+                            "properties": {
+                              "location": {
+                                "type": "string",
+                                "description": "The city and state, e.g. San Francisco, CA",
                               },
-                              "required": ["location"],
+                              "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                            },
+                            "required": ["location"],
                           },
+                        }
                       }
                   ];
 
                   const response = await openai.chat.completions.create({
-                      model: "gpt-3.5-turbo",
-                      messages: messages,
-                      functions: functions,
-                      function_call: "auto",  // auto is default, but we'll be explicit
+                    model: "gpt-3.5-turbo",
+                    messages: messages,
+                    tools: tools,
+                    tool_choice: "auto",
                   });
 
                   console.log(response);
@@ -406,30 +415,37 @@ paths:
                 main();
             response: &chat_completion_function_example |
               {
+                "id": "chatcmpl-abc123",
+                "object": "chat.completion",
+                "created": 1699896916,
+                "model": "gpt-3.5-turbo-0613",
                 "choices": [
                   {
-                    "finish_reason": "function_call",
                     "index": 0,
                     "message": {
+                      "role": "assistant",
                       "content": null,
-                      "function_call": {
-                        "arguments": "{\n  \"location\": \"Boston, MA\"\n}",
-                        "name": "get_current_weather"
-                      },
-                      "role": "assistant"
-                    }
+                      "tool_calls": [
+                        {
+                          "id": "call_abc123",
+                          "type": "function",
+                          "function": {
+                            "name": "get_current_weather",
+                            "arguments": "{\n\"location\": \"Boston, MA\"\n}"
+                          }
+                        }
+                      ]
+                    },
+                    "finish_reason": "tool_calls",
                   }
                 ],
-                "created": 1694028367,
-                "model": "gpt-3.5-turbo-0613",
-                "system_fingerprint": "fp_44709d6fcb",
-                "object": "chat.completion",
                 "usage": {
-                  "completion_tokens": 18,
                   "prompt_tokens": 82,
-                  "total_tokens": 100
+                  "completion_tokens": 17,
+                  "total_tokens": 99
                 }
               }
+  
   /completions:
     post:
       operationId: createCompletion
