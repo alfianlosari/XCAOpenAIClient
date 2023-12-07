@@ -135,7 +135,7 @@ public struct OpenAIClient {
             maxTokens: Int? = 300) async throws -> String {
         let response = try await client.createChatCompletion(body: .json(.init(
             messages: [
-                .ChatCompletionRequestUserMessage(.init(content: .case1("Describe this image in details, provide all the visual representation."), role: .user)),
+                .ChatCompletionRequestUserMessage(.init(content: .case1("Describe this image in details, provide all visual representations, you can ignore text within the image"), role: .user)),
                        .ChatCompletionRequestUserMessage(
                         .init(content: .case2([.ChatCompletionRequestMessageContentPartImage(
                             .init(_type: .image_url, image_url:
